@@ -1,0 +1,54 @@
+# Local development services for AskTheLedger.
+# Phase 0 runs only the data services. The gateway, agent and web app
+# run directly on your machine during development and are added later.
+name: asktheledger
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB in .env}
+    ports:
+      # 127.0.0.1 means only this computer can connect, not your Wi-Fi network.
+      # Format is host_ip:host_port:container_port.
+      - "127.0.0.1:${POSTGRES_PORT:-5435}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    restart: unless-stopped
+
+  redis:
+    image: redis:8-alpine
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env}
+    # $$ tells Compose "pass a literal $ to the container", so the shell
+    # inside the container reads the password from its own environment.
+    command: ["sh", "-c", "exec redis-server --requirepass \"$${REDIS_PASSWORD}\" --appendonly yes"]
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6380}:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$${REDIS_PASSWORD}\" --no-auth-warning ping | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:

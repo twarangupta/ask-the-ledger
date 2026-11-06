@@ -1,0 +1,28 @@
+# Secrets: real values live only in .env on your machine, never in git.
+.env
+.env.*
+!.env.example
+
+# Node.js (gateway and web, added in later phases)
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Python (agent and eval, added in later phases)
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Editors and operating systems
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

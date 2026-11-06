@@ -1,0 +1,14 @@
+# Store every text file with LF line endings in git, on every OS.
+# Linux containers break on Windows CRLF endings in shell and SQL scripts.
+* text=auto eol=lf
+
+# Windows-only scripts keep CRLF.
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary files: never touch their bytes.
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
