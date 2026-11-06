@@ -26,3 +26,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Personal docs (learning guide, build log, LinkedIn drafts) stay local only.
+docs/
